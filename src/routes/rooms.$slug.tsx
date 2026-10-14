@@ -30,7 +30,8 @@ export const Route = createFileRoute("/rooms/$slug")({
 function RoomPage() {
   const { room } = Route.useLoaderData();
   const [lb, setLb] = useState<number | null>(null);
-  const [main, ...rest] = room.images;
+  const main = room.images[0]!;
+  const rest = room.images.slice(1);
   return (
     <>
       <nav aria-label="Breadcrumb" className="container-page pt-8 text-sm text-muted-foreground">

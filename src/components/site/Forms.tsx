@@ -16,7 +16,7 @@ export function PrototypeNotice() {
   );
 }
 
-function Err({ id, msg }: { id: string; msg?: string }) {
+function Err({ id, msg }: { id: string; msg?: string | undefined }) {
   return msg ? <p id={id} role="alert" className="mt-1 text-xs text-destructive">{msg}</p> : null;
 }
 
@@ -36,10 +36,12 @@ function Ready({ subject, body, onReset }: { subject: string; body: string; onRe
   );
 }
 
+type Errs = Partial<Record<"checkIn" | "checkOut" | "name" | "email" | "message", string>>;
+
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
 export function validateStay(v: { checkIn: string; checkOut: string }, today = todayISO()) {
-  const e: Record<string, string> = {};
+  const e: Errs = {};
   if (!v.checkIn) e.checkIn = "Choose a check-in date.";
   else if (v.checkIn < today) e.checkIn = "Check-in can't be in the past.";
   if (!v.checkOut) e.checkOut = "Choose a check-out date.";
@@ -51,7 +53,7 @@ const emailOk = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 
 export function BookingInquiryForm({ initialRoom = "", compact = false }: { initialRoom?: string; compact?: boolean }) {
   const [v, setV] = useState({ checkIn: "", checkOut: "", adults: "2", children: "0", roomsCount: "1", room: initialRoom, name: "", email: "", phone: "", notes: "" });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Errs>({});
   const [ready, setReady] = useState(false);
   const set = (k: keyof typeof v) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setV({ ...v, [k]: e.target.value });
 
@@ -73,8 +75,8 @@ export function BookingInquiryForm({ initialRoom = "", compact = false }: { init
   const inp = (k: keyof typeof v, lbl: string, type = "text", extra: React.InputHTMLAttributes<HTMLInputElement> = {}) => (
     <div>
       <label htmlFor={`b-${k}`} className={label}>{lbl}</label>
-      <input id={`b-${k}`} type={type} value={v[k]} onChange={set(k)} aria-invalid={!!errors[k]} aria-describedby={errors[k] ? `b-${k}-err` : undefined} className={field} {...extra} />
-      <Err id={`b-${k}-err`} msg={errors[k]} />
+      <input id={`b-${k}`} type={type} value={v[k]} onChange={set(k)} aria-invalid={!!errors[k as keyof Errs]} aria-describedby={errors[k as keyof Errs] ? `b-${k}-err` : undefined} className={field} {...extra} />
+      <Err id={`b-${k}-err`} msg={errors[k as keyof Errs]} />
     </div>
   );
   const num = (k: keyof typeof v, lbl: string, min: number, max: number) => (
@@ -125,12 +127,12 @@ export function BookingInquiryForm({ initialRoom = "", compact = false }: { init
 
 export function ContactForm() {
   const [v, setV] = useState({ name: "", email: "", phone: "", topic: "Reservation", message: "" });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Errs>({});
   const [ready, setReady] = useState(false);
   const set = (k: keyof typeof v) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setV({ ...v, [k]: e.target.value });
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    const errs: Record<string, string> = {};
+    const errs: Errs = {};
     if (!v.name.trim()) errs.name = "Enter your full name.";
     if (!emailOk(v.email)) errs.email = "Enter a valid email address.";
     if (v.message.trim().length < 10) errs.message = "Please write a message of at least 10 characters.";
@@ -139,7 +141,7 @@ export function ContactForm() {
   };
   if (ready)
     return <Ready subject={`${v.topic} inquiry from ${v.name}`} body={`${v.message}\n\n${v.name}\n${v.email}\n${v.phone}`} onReset={() => setReady(false)} />;
-  const err = (k: string) => ({ "aria-invalid": !!errors[k], "aria-describedby": errors[k] ? `c-${k}-err` : undefined });
+  const err = (k: keyof Errs) => ({ "aria-invalid": !!errors[k], "aria-describedby": errors[k] ? `c-${k}-err` : undefined });
   return (
     <form onSubmit={submit} noValidate className="space-y-5">
       <div className="grid gap-4 sm:grid-cols-2">
