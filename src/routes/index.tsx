@@ -3,7 +3,6 @@ import { Mail, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FinalCta, SectionHeading } from "@/components/site/Layout";
 import { RoomCard } from "@/components/site/RoomCard";
-import { BookingInquiryForm } from "@/components/site/Forms";
 import { facilities, hotel, rooms } from "@/data/hotel";
 import { img } from "@/data/images";
 
@@ -146,5 +145,3 @@ function BookingInquiryFormCompactLink() {
     </div>
   );
 }
-
-export { BookingInquiryForm };
