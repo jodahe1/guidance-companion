@@ -27,8 +27,8 @@ export function RoomCard({ room }: { room: Room }) {
     <article className="group flex flex-col overflow-hidden bg-card shadow-soft">
       <div className="aspect-[4/3] overflow-hidden">
         <img
-          src={room.images[0].src}
-          alt={room.images[0].alt}
+          src={room.images[0]?.src}
+          alt={room.images[0]?.alt}
           loading="lazy"
           width={800}
           height={600}

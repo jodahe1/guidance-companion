@@ -6,7 +6,7 @@ import { hotel } from "@/data/hotel";
 const t = "Book a Room — Reservation Inquiry | Gambella Hotel";
 const d = "Send a reservation inquiry to Gambella Hotel in Addis Ababa with your dates, guests and preferred room.";
 export const Route = createFileRoute("/book")({
-  validateSearch: (s: Record<string, unknown>): { room?: string } => (typeof s.room === "string" ? { room: s.room } : {}),
+  validateSearch: (s: Record<string, unknown>): { room?: string } => (typeof s["room"] === "string" ? { room: s["room"] } : {}),
   head: () => ({ meta: [{ title: t }, { name: "description", content: d }, { property: "og:title", content: t }, { property: "og:description", content: d }] }),
   component: Book,
 });
